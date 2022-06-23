@@ -30,13 +30,19 @@ register_dict = {'R0':'000' ,
                  'FLAGS':'111'}
 
 def a(list_instr):
-    print(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[list_instr[3]])
+    ans = opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[list_instr[3]]
+    output.write(ans+"\n")
+
 
 
 def typeb(opcode, register_dict, list_instr):
-    for keys in opcode.keys():
-        if str(list_instr[0]).lower() == str(keys).lower():
-            op = opcode[keys][0]
+    if random[i][0]!="mov":
+        for keys in opcode.keys():
+            if str(list_instr[0]).lower() == str(keys).lower():
+                op = opcode[keys][0]
+    else:
+        op = "10010"
+
 
     for reg in register_dict.keys():
         if str(list_instr[1]).lower() == str(reg).lower():
@@ -45,18 +51,89 @@ def typeb(opcode, register_dict, list_instr):
     while len(b) != 8:
         b = '0' + b
     mc = op + r + b
-    print(mc)
+    output.write(mc+"\n")
+def typeC(opcode, register_dict, list_instr):
+    for keys in opcode.keys():
+        if str(list_instr[0]).lower() == str(keys).lower():
+            op = opcode[keys][0]
 
-file = open("tezt.txt","r")
+    for reg in register_dict.keys():
+        if str(list_instr[1]).lower() == str(reg).lower():
+            r1 = register_dict[reg]
+
+    for reg in register_dict.keys():
+        if str(list_instr[2]).lower() == str(reg).lower():
+            r2 = register_dict[reg]
+
+    mc = op + '00000' + r1 + r2
+    output.write(mc+"\n")
+
+def typed(opcode, register_dict, list_instr):
+    for keys in opcode.keys():
+        if str(list_instr[0]).lower() == str(keys).lower():
+            op = opcode[keys][0]
+
+    for reg in register_dict.keys():
+        if str(list_instr[1]).lower() == str(reg).lower():
+            r = register_dict[reg]
+    mem_add = str(bin(var.index(list_instr[2])+count))[2:]
+    while len(mem_add)!=8:
+        mem_add="0"+mem_add
+    ans = op+r+mem_add
+    output.write(ans+"\n")
+
+def typee(opcode, register_dict, list_instr):
+    for keys in opcode.keys():
+        if str(list_instr[0]).lower() == str(keys).lower():
+            op = opcode[keys][0]
+
+    mem_add = str(bin(var.index(list_instr[1])+count))[2:]
+    while len(mem_add)!=8:
+        mem_add="0"+mem_add
+
+    ans = op+"000"+mem_add
+    output.write(ans+"\n")
+
+random = []
+file = open("tezt.txt", "r")
+output = open("answer.txt","a")
+count = 0
+var_count = 0
+var = []
 for line in file:
     list_instr = []
     for i in line.split():
         list_instr.append(i)
-    if opcode[list_instr[0]][1]=="a":
-        a(list_instr)
-    elif list_instr[0]=="mov" and list_instr[2][:1]=="$":
-        typeb(opcode,register_dict,list_instr)
-    elif opcode[list_instr[0]][1]=="b":
 
-        typeb(opcode,register_dict,list_instr)
-
+    if list_instr != [] :
+        if list_instr[0] == 'var':
+            var.append(list_instr[1])
+            var_count += 1
+        else:
+            count += 1
+            random.append(list_instr)
+for i in range(count):
+    if opcode[random[i][0]][1] == "a":
+        a(random[i])
+    elif random[i][0] == "mov" and random[i][2][:1] == "$":
+        typeb(opcode, register_dict, random[i])
+    elif opcode[random[i][0]][1] == "b":
+        typeb(opcode, register_dict, random[i])
+    elif opcode[random[i][0]][1] == "c":
+        typeC(opcode, register_dict, random[i])
+    elif opcode[random[i][0]][1] == "d":
+        if random[i][1] in var:
+            typed(opcode,register_dict,random[i])
+        else:
+            ans = "error"
+            output.write(ans)
+            break
+    elif opcode[random[i][0]][1] == "e":
+        if random[i][1] in var:
+            typee(opcode,register_dict,random[i])
+        else:
+            ans = "error"
+            output.write(ans)
+            break
+    elif random[i][0] == "hlt":
+        print(opcode[random[i][0]][0] + "00000000000")
