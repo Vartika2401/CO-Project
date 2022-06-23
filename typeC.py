@@ -1,4 +1,4 @@
-def typec(opcode, register_dict, list_instr):
+def typeC(opcode, register_dict, list_instr):
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
