@@ -60,3 +60,4 @@ for line in file:
 
         typeb(opcode,register_dict,list_instr)
 
+
