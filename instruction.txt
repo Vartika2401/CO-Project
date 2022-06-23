@@ -1,0 +1,4 @@
+sub R1 R2 R0
+mov R1 $20
+ls R4 $80
+xor R5 R3 R1
