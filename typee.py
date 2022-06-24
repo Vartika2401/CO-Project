@@ -10,3 +10,4 @@ def typee(opcode, register_dict, list_instr):
     while len(mem_add)!=8:
         mem_add="0"+mem_add
     print(op+"000"+mem_add)
+
