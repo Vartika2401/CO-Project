@@ -53,6 +53,9 @@ def typeb(opcode, register_dict, list_instr):
     mc = op + r + b
     output.write(mc+"\n")
 def typeC(opcode, register_dict, list_instr):
+    if list_instr[1]=='FLAGS':
+        print(f'ERROR')
+        return
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
@@ -69,6 +72,9 @@ def typeC(opcode, register_dict, list_instr):
     output.write(mc+"\n")
 
 def typed(opcode, register_dict, list_instr):
+    if list_instr[1]=='FLAGS' or list_instr[2]=='FLAGS':
+        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        return
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
@@ -83,15 +89,13 @@ def typed(opcode, register_dict, list_instr):
     output.write(ans+"\n")
 
 def typee(opcode, register_dict, list_instr):
+    if list_instr[1]=='FLAGS':
+        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        return
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
-
-    mem_add = str(bin(var.index(list_instr[1])+count))[2:]
-    while len(mem_add)!=8:
-        mem_add="0"+mem_add
-
-    ans = op+"000"+mem_add
+    ans = op+"00000000000"
     output.write(ans+"\n")
 
 random = []
