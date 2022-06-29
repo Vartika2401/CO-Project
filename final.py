@@ -121,18 +121,35 @@ var_count = 0
 var = []
 ans = 0
 labels = {}
+var_error=0
+line_num = 0
+error = False
 for line in file:
     list_instr = []
     for i in line.split():
         list_instr.append(i)
+    # print(list_instr)
     if list_instr != []:
+        line_num+=1
+        # if var_count+2-line_num==1:
         if list_instr[0] == 'var':
-            if list_instr[1] not in opcode.keys() and list_instr[1] not in register_dict.keys():
-                var.append(list_instr[1])
-                var_count += 1
+            if line_num-var_error==1:
+                if list_instr[1] not in opcode.keys() and list_instr[1] not in register_dict.keys():
+                    var.append(list_instr[1])
+                    var_count += 1
+                    var_error = line_num
+                else:
+                    ans = "error: variable using in-built names"
+                    output.write(ans+"\n")
+                    error = True
             else:
-                ans = "error"
-                output.write(ans)
+                print("late var")
+                error = True
+                break
+        # # elif var_count+2-line_num>=1:
+        # #     output.write("error:var not declared on top"+"\n")
+        #     error = True
+        #     break
         elif list_instr[0][-1]!=":":
             count += 1
             random.append(list_instr)
@@ -140,26 +157,34 @@ for line in file:
             labels[list_instr[0][0:-1]] = count - 1
             random.append(list_instr[1:])
             count+=1
-for i in range(count):
-    if opcode[random[i][0]][1] == "a":
-        a(random[i])
-    elif random[i][0] == "mov" and random[i][2][:1] == "$":
-        typeb(opcode, register_dict, random[i])
-    elif opcode[random[i][0]][1] == "b":
-        typeb(opcode, register_dict, random[i])
-    elif opcode[random[i][0]][1] == "c":
-        typeC(opcode, register_dict, random[i])
-    elif opcode[random[i][0]][1] == "d":
-        if random[i][1] in var:
-            typed(opcode, register_dict, random[i])
-        else:
-            ans = "error"
-            output.write(ans)
-            break
-    elif opcode[random[i][0]][1] == "e":
-        if random[i][1] in labels:
-            typee(opcode,register_dict,random[i])
-    elif random[i][0] == "hlt":
-        ans = "0101000000000000"
-        output.write(ans)
 
+# print(random)
+if error==False:
+    for i in range(count):
+        if opcode[random[i][0]][1] == "a":
+            a(random[i])
+        elif random[i][0] == "mov" and random[i][2][:1] == "$":
+            typeb(opcode, register_dict, random[i])
+        elif opcode[random[i][0]][1] == "b":
+            typeb(opcode, register_dict, random[i])
+        elif opcode[random[i][0]][1] == "c":
+            typeC(opcode, register_dict, random[i])
+        elif opcode[random[i][0]][1] == "d":
+            if random[i][1] in var:
+                typed(opcode, register_dict, random[i])
+            else:
+                ans = "error"
+                output.write(ans)
+                break
+        elif opcode[random[i][0]][1] == "e":
+            if random[i][1] in labels:
+                typee(opcode,register_dict,random[i])
+            else:
+                output.write("Error: label not defined")
+                break
+        elif random[i][0] == "hlt":
+            ans = "0101000000000000"
+            output.write(ans+"\n")
+    if random[-1][0]!="hlt":
+        output.write("Line:"+str(count+1)+" File never closed"+"\n")
+    output.close()
