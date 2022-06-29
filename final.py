@@ -49,11 +49,6 @@ def typeb(opcode, register_dict, list_instr):
                 op = opcode[keys][0]
     else:
         op = "10010"
-
-    for keys in opcode.keys():
-        if str(list_instr[0]).lower() == str(keys).lower():
-            op = opcode[keys][0]
-
     for reg in register_dict.keys():
         if str(list_instr[1]).lower() == str(reg).lower():
             r = register_dict[reg]
@@ -143,7 +138,7 @@ for line in file:
                     output.write(ans+"\n")
                     error = True
             else:
-                print("late var")
+                output.write("error: var defined late")
                 error = True
                 break
         # # elif var_count+2-line_num>=1:
@@ -158,14 +153,17 @@ for line in file:
             random.append(list_instr[1:])
             count+=1
 
-# print(random)
+print(random)
+print(count)
 if error==False:
     for i in range(count):
-        if opcode[random[i][0]][1] == "a":
+        if random[i][0] == "hlt" and i!=count-1:
+            output.write("error: program closed before end"+"\n")
+            break
+        elif opcode[random[i][0]][1] == "a":
             a(random[i])
-        elif random[i][0] == "mov" and random[i][2][:1] == "$":
-            typeb(opcode, register_dict, random[i])
-        elif opcode[random[i][0]][1] == "b":
+        elif random[i][2][0:1] == "$":
+            print("b")
             typeb(opcode, register_dict, random[i])
         elif opcode[random[i][0]][1] == "c":
             typeC(opcode, register_dict, random[i])
@@ -182,9 +180,6 @@ if error==False:
             else:
                 output.write("Error: label not defined")
                 break
-        elif random[i][0] == "hlt":
-            ans = "0101000000000000"
-            output.write(ans+"\n")
-    if random[-1][0]!="hlt":
-        output.write("Line:"+str(count+1)+" File never closed"+"\n")
+    if random[-1][0]!="hlt" and i==count-1:
+        output.write("Line:"+str(count+1)+" Program end command missing"+"\n")
     output.close()
