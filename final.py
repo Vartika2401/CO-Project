@@ -34,13 +34,13 @@ def a(list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
         print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
         return
-    print(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
-        list_instr[3]])
+    output.write(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
+        list_instr[3]]+"\n")
 
 
 def typeb(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
-        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
         return
 
     if random[i][0] != "mov":
@@ -94,6 +94,7 @@ def typed(opcode, register_dict, list_instr):
         if str(list_instr[1]).lower() == str(reg).lower():
             r = register_dict[reg]
     mem_add = str(bin(var.index(list_instr[2]) + count))[2:]
+    # print(mem_add)
     while len(mem_add) != 8:
         mem_add = "0" + mem_add
     ans = op + r + mem_add
@@ -162,6 +163,10 @@ if error==False:
         if random[i][0] == "hlt" and i!=count-1:
             output.write("error: program closed before end"+"\n")
             break
+        elif random[i][0] not in opcode.keys():
+            print("error: wrong syntax!!")
+        # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
+        #     print("error: unavilable reg called!!")
         elif opcode[random[i][0]][1] == "a":
             a(random[i])
         elif len(random[i])==3 and random[i][2][0:1] == "$":
@@ -169,10 +174,10 @@ if error==False:
         elif opcode[random[i][0]][1] == "c":
             typeC(opcode, register_dict, random[i])
         elif opcode[random[i][0]][1] == "d":
-            if random[i][1] in var:
+            if random[i][2] in var:
                 typed(opcode, register_dict, random[i])
             else:
-                ans = "error"
+                ans = "error: var not defined"
                 output.write(ans)
                 break
         elif opcode[random[i][0]][1] == "e":
@@ -181,6 +186,8 @@ if error==False:
             else:
                 output.write("Error: label not defined")
                 break
+        elif random[i][0]=="hlt" and i==count-1:
+            output.write("0101000000000000")
     if random[-1][0]!="hlt" and i==count-1:
         output.write("Line:"+str(count+1)+" Program end command missing"+"\n")
-    output.close()  
+    # output.close()
