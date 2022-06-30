@@ -53,10 +53,13 @@ def typeb(opcode, register_dict, list_instr):
         if str(list_instr[1]).lower() == str(reg).lower():
             r = register_dict[reg]
     b = str(bin(int(list_instr[2][1:])))[2:]
-    while len(b) != 8:
-        b = '0' + b
-    mc = op + r + b
-    output.write(mc + "\n")
+    if len(b)>8:
+        output.write("error: Value exceeding the upper limit"+"\n")
+    else:
+        while len(b) != 8:
+            b = '0' + b
+        mc = op + r + b
+        output.write(mc + "\n")
 
 
 def typeC(opcode, register_dict, list_instr):
@@ -153,8 +156,7 @@ for line in file:
             random.append(list_instr[1:])
             count+=1
 
-print(random)
-print(count)
+# print(random)
 if error==False:
     for i in range(count):
         if random[i][0] == "hlt" and i!=count-1:
@@ -162,8 +164,7 @@ if error==False:
             break
         elif opcode[random[i][0]][1] == "a":
             a(random[i])
-        elif random[i][2][0:1] == "$":
-            print("b")
+        elif len(random[i])==3 and random[i][2][0:1] == "$":
             typeb(opcode, register_dict, random[i])
         elif opcode[random[i][0]][1] == "c":
             typeC(opcode, register_dict, random[i])
@@ -182,4 +183,4 @@ if error==False:
                 break
     if random[-1][0]!="hlt" and i==count-1:
         output.write("Line:"+str(count+1)+" Program end command missing"+"\n")
-    output.close()
+    output.close()  
