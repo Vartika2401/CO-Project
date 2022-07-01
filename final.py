@@ -29,11 +29,17 @@ register_dict = {'R0': '000',
                  'R6': '110',
                  'FLAGS': '111'}
 
-
-def a(list_instr):
-    if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
-        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+def a(list_instr,):
+    if len(list_instr)!=4:
+        output.write("error: missing arguments"+"\n")
+        return 1
+    if list_instr[1] not in register_dict or list_instr[2] not in register_dict or list_instr[3] not in register_dict:
+        output.write("error: wrong arguments given"+"\n")
+        error = True
         return
+    if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
+        output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        return 1
     output.write(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
         list_instr[3]]+"\n")
 
@@ -41,7 +47,10 @@ def a(list_instr):
 def typeb(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
         output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
-        return
+        return 1
+    if type(eval(list_instr[2][1:]))!=int or float(list_instr[2][1:])<0:
+        output.write("error: negative/floating numbers not allowed")
+        return 1
 
     if random[i][0] != "mov":
         for keys in opcode.keys():
@@ -63,9 +72,9 @@ def typeb(opcode, register_dict, list_instr):
 
 
 def typeC(opcode, register_dict, list_instr):
-    if list_instr[1] == 'FLAGS':
-        print(f'ERROR')
-        return
+    if (list_instr[1] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[1]=='FLAGS'):
+        output.write(f'ERROR: {list_instr[0]} cannot be used with FLAGS register\n')
+        return 1
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
@@ -84,8 +93,8 @@ def typeC(opcode, register_dict, list_instr):
 
 def typed(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS':
-        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
-        return
+        output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        return 1
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
@@ -103,8 +112,8 @@ def typed(opcode, register_dict, list_instr):
 
 def typee(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
-        print(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
-        return
+        output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
+        return 1
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
@@ -114,7 +123,7 @@ def typee(opcode, register_dict, list_instr):
 
 random = []
 file = open("tezt.txt", "r")
-output = open("answer.txt", "a")
+output = open("answer.txt", "w")
 count = 0
 var_count = 0
 var = []
@@ -160,34 +169,45 @@ for line in file:
 # print(random)
 if error==False:
     for i in range(count):
-        if random[i][0] == "hlt" and i!=count-1:
-            output.write("error: program closed before end"+"\n")
-            break
-        elif random[i][0] not in opcode.keys():
-            print("error: wrong syntax!!")
-        # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
-        #     print("error: unavilable reg called!!")
-        elif opcode[random[i][0]][1] == "a":
-            a(random[i])
-        elif len(random[i])==3 and random[i][2][0:1] == "$":
-            typeb(opcode, register_dict, random[i])
-        elif opcode[random[i][0]][1] == "c":
-            typeC(opcode, register_dict, random[i])
-        elif opcode[random[i][0]][1] == "d":
-            if random[i][2] in var:
-                typed(opcode, register_dict, random[i])
-            else:
-                ans = "error: var not defined"
-                output.write(ans)
+        if error == False:
+            if random[i][0] == "hlt" and i!=count-1:
+                output.write("error: program closed before end"+"\n")
                 break
-        elif opcode[random[i][0]][1] == "e":
-            if random[i][1] in labels:
-                typee(opcode,register_dict,random[i])
-            else:
-                output.write("Error: label not defined")
-                break
-        elif random[i][0]=="hlt" and i==count-1:
-            output.write("0101000000000000")
+            elif random[i][0] not in opcode.keys():
+                output.write("error: wrong syntax!!")
+            # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
+            #     print("error: unavilable reg called!!")
+            elif opcode[random[i][0]][1] == "a":
+                ans = a(random[i])
+                if ans == 1:
+                    break
+            elif len(random[i])==3 and random[i][2][0:1] == "$":
+                ans = typeb(opcode, register_dict, random[i])
+                if ans ==1:
+                    break
+            elif opcode[random[i][0]][1] == "c":
+                ans = typeC(opcode, register_dict, random[i])
+                if ans == 1:
+                    break
+            elif opcode[random[i][0]][1] == "d":
+                if random[i][2] in var:
+                    ans = typed(opcode, register_dict, random[i])
+                    if ans == 1:
+                        break
+                else:
+                    ans = "error: var not defined"
+                    output.write(ans)
+                    break
+            elif opcode[random[i][0]][1] == "e":
+                if random[i][1] in labels:
+                    ans = typee(opcode,register_dict,random[i])
+                    if ans ==1:
+                        break
+                else:
+                    output.write("Error: label not defined")
+                    break
+            elif random[i][0]=="hlt" and i==count-1:
+                output.write("0101000000000000")
     if random[-1][0]!="hlt" and i==count-1:
         output.write("Line:"+str(count+1)+" Program end command missing"+"\n")
     # output.close()
