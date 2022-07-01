@@ -35,8 +35,7 @@ def a(list_instr,):
         return 1
     if list_instr[1] not in register_dict or list_instr[2] not in register_dict or list_instr[3] not in register_dict:
         output.write("error: wrong arguments given"+"\n")
-        error = True
-        return
+        return 1
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
         output.write(f'ERROR, {list_instr[0]} cannot be used with FLAGS register')
         return 1
@@ -64,6 +63,7 @@ def typeb(opcode, register_dict, list_instr):
     b = str(bin(int(list_instr[2][1:])))[2:]
     if len(b)>8:
         output.write("error: Value exceeding the upper limit"+"\n")
+        return 1
     else:
         while len(b) != 8:
             b = '0' + b
@@ -175,6 +175,7 @@ if error==False:
                 break
             elif random[i][0] not in opcode.keys():
                 output.write("error: wrong syntax!!")
+                break
             # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
             #     print("error: unavilable reg called!!")
             elif opcode[random[i][0]][1] == "a":
