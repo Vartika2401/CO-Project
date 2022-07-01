@@ -1,3 +1,4 @@
+import sys
 opcode = {"add": ["10000", "a"],
           "sub": ["10001", "a"],
           "movi": ["10010", "b"],
@@ -122,8 +123,8 @@ def typee(opcode, register_dict, list_instr):
 
 
 random = []
-file = open("tezt.txt", "r")
-output = open("answer.txt", "w")
+file = sys.stdlin
+output = sys.stdout
 count = 0
 var_count = 0
 var = []
