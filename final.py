@@ -118,9 +118,19 @@ def typee(opcode, register_dict, list_instr):
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
             op = opcode[keys][0]
-    ans = op + "00000000000"
+    for keys in labels.keys():
+        if str(list_instr[1]) == str(keys).lower():
+            mem = (labels[keys])
+    mem = str(bin(mem))[2:]
+    # print(bin(mem))
+    while len(mem)<8:
+        mem = "0"+mem
+
+    ans = op + "000"+mem
     output.write(ans + "\n")
 
+    ans = op + "000"+mem
+    output.write(ans + "\n")
 
 random = []
 file = sys.stdlin
