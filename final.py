@@ -133,7 +133,7 @@ def typee(opcode, register_dict, list_instr):
     output.write(ans + "\n")
 
 random = []
-file = sys.stdlin
+file = sys.stdin
 output = sys.stdout
 count = 0
 var_count = 0
