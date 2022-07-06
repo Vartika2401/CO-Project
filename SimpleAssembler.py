@@ -32,13 +32,13 @@ register_dict = {'R0': '000',
 
 def a(list_instr):
     if len(list_instr)!=4:
-        output.write("Line"+str(all_line.index(list_instr)+1)+": error: missing arguments"+"\n")
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: missing arguments"+"\n")
         return 1
     if list_instr[1] not in register_dict or list_instr[2] not in register_dict or list_instr[3] not in register_dict:
-        output.write("Line"+str(all_line.index(list_instr)+1)+": error: wrong arguments given"+"\n")
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: wrong arguments given"+"\n")
         return 1
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
-        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR, {list_instr[0]} can\'t be used with FLAGS register')
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
         return 1
     output.write(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
         list_instr[3]]+"\n")
@@ -46,10 +46,10 @@ def a(list_instr):
 
 def typeb(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
-        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR, {list_instr[0]} can\'t be used with FLAGS register')
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
         return 1
     if type(eval(list_instr[2][1:]))!=int or float(list_instr[2][1:])<0:
-        output.write("Line"+str(all_line.index(list_instr)+1)+": error: negative/floating numbers not allowed")
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: negative/floating numbers not allowed")
         return 1
 
     if random[i][0] != "mov":
@@ -63,7 +63,7 @@ def typeb(opcode, register_dict, list_instr):
             r = register_dict[reg]
     b = str(bin(int(list_instr[2][1:])))[2:]
     if len(b)>8:
-        output.write("Line"+str(all_line.index(list_instr)+1)+": error: Value exceeding the upper limit"+"\n")
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: Value exceeding the upper limit"+"\n")
         return 1
     else:
         while len(b) != 8:
@@ -94,7 +94,7 @@ def typeC(opcode, register_dict, list_instr):
 
 def typed(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS':
-        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR, {list_instr[0]} can\'t be used with FLAGS register')
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
         return 1
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
@@ -113,7 +113,7 @@ def typed(opcode, register_dict, list_instr):
 
 def typee(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
-        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR, {list_instr[0]} can\'t be used with FLAGS register')
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
         return 1
     for keys in opcode.keys():
         if str(list_instr[0]).lower() == str(keys).lower():
@@ -158,11 +158,11 @@ for line in file:
                     var_count += 1
                     var_error = line_num
                 else:
-                    ans = "Line"+str(all_line.index(list_instr)+1)+": error: variable using in-built names"
+                    ans = "Line"+str(all_line.index(list_instr)+1)+": ERROR: variable using in-built names"
                     output.write(ans+"\n")
                     error = True
             else:
-                output.write("Line"+str(all_line.index(list_instr)+1)+": error: var defined late")
+                output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: variable defined late")
                 error = True
                 break
         # # elif var_count+2-line_num>=1:
@@ -181,10 +181,10 @@ if error==False:
     for i in range(count):
         if error == False:
             if random[i][0] == "hlt" and i!=count-1:
-                output.write("Line"+str(all_line.index(random[i])+1)+": error: program closed before end"+"\n")
+                output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: program closed before end"+"\n")
                 break
             elif random[i][0] not in opcode.keys():
-                output.write("Line"+str(all_line.index(random[i])+1)+": error: wrong syntax!!")
+                output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: wrong syntax!!")
                 break
             # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
             #     print("error: unavilable reg called!!")
@@ -206,7 +206,7 @@ if error==False:
                     if ans == 1:
                         break
                 else:
-                    ans = "Line"+str(all_line.index(random[i])+1)+": error: var not defined"
+                    ans = "Line"+str(all_line.index(random[i])+1)+": ERROR: variable not defined"
                     output.write(ans)
                     break
             elif opcode[random[i][0]][1] == "e":
@@ -215,10 +215,10 @@ if error==False:
                     if ans ==1:
                         break
                 else:
-                    output.write("Line"+str(all_line.index(random[i])+1)+": Error: label not defined")
+                    output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: label not defined")
                     break
             elif random[i][0]=="hlt" and i==count-1:
                 output.write("0101000000000000")
     if random[-1][0]!="hlt" and i==count-1:
-        output.write("Line"+str(all_line.index(random[i])+1)+": Program end command missing"+"\n")
+        output.write("Line"+str(all_line.index(random[i])+1)+" ERROR: Program end command missing"+"\n")
     # output.close()
