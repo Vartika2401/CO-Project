@@ -11,9 +11,9 @@ def add_func(machine_ins):
     sum = sum[2:]
 
     if (len(sum)>16):
-        register_list[reg3] = '1111111111111111'
-        print("add : owerflow flag is set")
-        # owerflow flag is set
+        register_list[reg3] = '0000000000000000'
+        print("add : overflow flag is set")
+        # overflow flag is set
     elif (len(sum)<16):
         sum = (16 - len(sum))*"0" + sum
     register_list[reg3] = sum
@@ -26,9 +26,9 @@ def sub_func(machine_ins):
     reg3 = int(machine_ins[13:16],2)
     diff = int(register_list[reg1],2) - int(register_list[reg2],2)
     if (diff < 0):
-        register_list[reg3] = '1111111111111111'
-        print("sub : owerflow flag is set")
-        # owerflow flag is set
+        register_list[reg3] = '0000000000000000'
+        print("sub : overflow flag is set")
+        # overflow flag is set
     else:
         diff = bin(diff)
         diff = diff[2:]
@@ -46,9 +46,9 @@ def mul_func(machine_ins):
     prod = bin(int(register_list[reg1],2) * int(register_list[reg2],2))
     prod = prod[2:]
     if (len(prod)>16):
-        register_list[reg3] = '1111111111111111'
-        print("add : owerflow flag is set")
-        # owerflow flag is set
+        register_list[reg3] = '0000000000000000'
+        print("add : overflow flag is set")
+        # overflow flag is set
     elif (len(prod)<16):
         prod = (16 - len(prod))*"0" + prod
     register_list[reg3] = prod
