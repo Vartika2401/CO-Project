@@ -3,6 +3,7 @@ register_list = ['0000000000000000','0000000000001000','0000000000000011','00000
 
 
 def add_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -12,14 +13,21 @@ def add_func(machine_ins):
 
     if (len(sum)>16):
         register_list[reg3] = '0000000000000000'
-        print("add : overflow flag is set")
         # overflow flag is set
-    elif (len(sum)<16):
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
+    elif (len(sum)<=16):
         sum = (16 - len(sum))*"0" + sum
-    register_list[reg3] = sum
+        register_list[6] = '0000000000000000'
+        register_list[reg3] = sum
+
+    PC+=1
 
 
 def sub_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -27,18 +35,25 @@ def sub_func(machine_ins):
     diff = int(register_list[reg1],2) - int(register_list[reg2],2)
     if (diff < 0):
         register_list[reg3] = '0000000000000000'
-        print("sub : overflow flag is set")
         # overflow flag is set
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
     else:
         diff = bin(diff)
         diff = diff[2:]
 
         if (len(diff)<16):
             diff = (16 - len(diff))*"0" + diff
+        register_list[6] = '0000000000000000'
         register_list[reg3] = diff
+
+    PC+=1
 
 
 def mul_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -47,14 +62,21 @@ def mul_func(machine_ins):
     prod = prod[2:]
     if (len(prod)>16):
         register_list[reg3] = '0000000000000000'
-        print("add : overflow flag is set")
         # overflow flag is set
-    elif (len(prod)<16):
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
+    elif (len(prod)<=16):
         prod = (16 - len(prod))*"0" + prod
-    register_list[reg3] = prod
+        register_list[6] = '0000000000000000'
+        register_list[reg3] = prod
+
+    PC+=1
 
 
 def xor_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -68,10 +90,14 @@ def xor_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+
+    PC+=1
 
 
 def or_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -85,10 +111,14 @@ def or_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+
+    PC+=1
 
 
 def and_func(machine_ins):
+    global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
@@ -102,7 +132,10 @@ def and_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+    
+    PC+=1
 
 
 #add_func("1000000001010011")
