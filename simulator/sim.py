@@ -225,7 +225,7 @@ def movreg(machine_ins):
     global PC
     global register_list
     reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     register_list[reg1_i] = register_list[reg2_i]
@@ -234,7 +234,7 @@ def divide(machine_ins):
     global PC
     global register_list
     reg3 = machine_ins[7:12]
-    reg4 = machine_ins[12:]
+    reg4 = machine_ins[13:]
     reg1_i = int(reg3, 2)
     reg2_i = int(reg4, 2)
     q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
@@ -252,7 +252,7 @@ def invert(machine_ins):
     global PC
     global register_list
     reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     reg1_val = register_list[reg1_i]
@@ -265,13 +265,14 @@ def invert(machine_ins):
     register_list[reg2_i] = reg1_val
 
     PC += 1
-def cmp(machine_ins):
+def cmpp(machine_ins):
     global PC
     global register_list
     reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
+    #print(reg1_i,reg2_i)
     reg1_val = int(register_list[reg1_i], 2)
     reg2_val = int(register_list[reg2_i], 2)
     if reg1_val > reg2_val:
@@ -435,7 +436,7 @@ for q in range(256):
         # for i in range(256):
         #     print(mem[i])
     elif instruction[:5] == "11110":
-        cmp(instruction)
+        cmpp(instruction)
         for items in range(7):
             print(register_list[items],end = " ")
         print()
