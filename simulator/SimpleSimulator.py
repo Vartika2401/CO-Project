@@ -1,4 +1,5 @@
 import sys
+
 register_list = ['0000000000000000','0000000000000000','0000000000000000','0000000000000000','0000000000000000','0000000000000000','0000000000000000']
 opcode = {"add": ["10000", "a"],
           "sub": ["10001", "a"],
@@ -55,7 +56,7 @@ def rs(instruction):
                 register_list[i]=register_list[i][0:16-int(imm,2)]
                 while len(register_list[i])<16:
                     register_list[i]="0"+register_list[i]
-                print(register_list[i])
+                # print(register_list[i])
     PC+=1
 def ls(instruction):
     global PC
@@ -71,59 +72,75 @@ def ls(instruction):
                 register_list[i] = register_list[i][int(imm, 2):]
                 while len(register_list[i]) < 16:
                     register_list[i] = register_list[i]+"0"
-                print(register_list[i])
+                # print(register_list[i])
     PC+=1
 def add_func(machine_ins):
     global PC
     global register_list
-    reg1 = int(machine_ins[7:10], 2)
-    reg2 = int(machine_ins[10:13], 2)
-    reg3 = int(machine_ins[13:16], 2)
-    sum = bin(int(register_list[reg1], 2) + int(register_list[reg2], 2))
+    reg1 = int(machine_ins[7:10],2)
+    reg2 = int(machine_ins[10:13],2)
+    reg3 = int(machine_ins[13:16],2)
+    sum = bin(int(register_list[reg1],2) + int(register_list[reg2],2))
     sum = sum[2:]
+
+    if (len(sum)>16):
+        register_list[reg3] = '0000000000000000'
+        # overflow flag is set
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
+    elif (len(sum)<=16):
+        sum = (16 - len(sum))*"0" + sum
+        register_list[6] = '0000000000000000'
+        register_list[reg3] = sum
+
     PC+=1
-    if (len(sum) > 16):
-        register_list[reg3] = '1111111111111111'
-        print("add : owerflow flag is set")
-        # owerflow flag is set
-    elif (len(sum) < 16):
-        sum = (16 - len(sum)) * "0" + sum
-    register_list[reg3] = sum
 def sub_func(machine_ins):
     global PC
     global register_list
-    reg1 = int(machine_ins[7:10], 2)
-    reg2 = int(machine_ins[10:13], 2)
-    reg3 = int(machine_ins[13:16], 2)
-    diff = int(register_list[reg1], 2) - int(register_list[reg2], 2)
-    PC+=1
+    reg1 = int(machine_ins[7:10],2)
+    reg2 = int(machine_ins[10:13],2)
+    reg3 = int(machine_ins[13:16],2)
+    diff = int(register_list[reg1],2) - int(register_list[reg2],2)
     if (diff < 0):
-        register_list[reg3] = '1111111111111111'
-        print("sub : owerflow flag is set")
-        # owerflow flag is set
+        register_list[reg3] = '0000000000000000'
+        # overflow flag is set
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
     else:
         diff = bin(diff)
         diff = diff[2:]
 
-        if (len(diff) < 16):
-            diff = (16 - len(diff)) * "0" + diff
+        if (len(diff)<16):
+            diff = (16 - len(diff))*"0" + diff
+        register_list[6] = '0000000000000000'
         register_list[reg3] = diff
+
+    PC+=1
 def mul_func(machine_ins):
     global PC
     global register_list
-    reg1 = int(machine_ins[7:10], 2)
-    reg2 = int(machine_ins[10:13], 2)
-    reg3 = int(machine_ins[13:16], 2)
-    prod = bin(int(register_list[reg1], 2) * int(register_list[reg2], 2))
+    reg1 = int(machine_ins[7:10],2)
+    reg2 = int(machine_ins[10:13],2)
+    reg3 = int(machine_ins[13:16],2)
+    prod = bin(int(register_list[reg1],2) * int(register_list[reg2],2))
     prod = prod[2:]
+    if (len(prod)>16):
+        register_list[reg3] = '0000000000000000'
+        # overflow flag is set
+        temp_flag = list(register_list[6])
+        temp_flag[12] = '1'
+        register_list[6] = ''.join(temp_flag)
+
+    elif (len(prod)<=16):
+        prod = (16 - len(prod))*"0" + prod
+        register_list[6] = '0000000000000000'
+        register_list[reg3] = prod
+
     PC+=1
-    if (len(prod) > 16):
-        register_list[reg3] = '1111111111111111'
-        print("add : owerflow flag is set")
-        # owerflow flag is set
-    elif (len(prod) < 16):
-        prod = (16 - len(prod)) * "0" + prod
-    register_list[reg3] = prod
 def xor_func(machine_ins):
     global PC
     global register_list
@@ -136,10 +153,13 @@ def xor_func(machine_ins):
 
     reg3_val = bin(reg1_val ^ reg2_val)
     reg3_val = reg3_val[2:]
-    PC+=1
+
     if (len(reg3_val) < 16):
         reg3_val = (16 - len(reg3_val)) * "0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+
+    PC += 1
 def or_func(machine_ins):
     global PC
     global register_list
@@ -152,13 +172,15 @@ def or_func(machine_ins):
 
     reg3_val = bin(reg1_val | reg2_val)
     reg3_val = reg3_val[2:]
-    PC +=1
+
     if (len(reg3_val) < 16):
         reg3_val = (16 - len(reg3_val)) * "0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+
+    PC += 1
 def and_func(machine_ins):
     global PC
-    PC+=1
     global register_list
     reg1 = int(machine_ins[7:10], 2)
     reg2 = int(machine_ins[10:13], 2)
@@ -172,7 +194,10 @@ def and_func(machine_ins):
 
     if (len(reg3_val) < 16):
         reg3_val = (16 - len(reg3_val)) * "0" + reg3_val
+    register_list[6] = '0000000000000000'
     register_list[reg3] = reg3_val
+
+    PC += 1
 def ld(instruction):
     global mem
     global  register_list
@@ -302,6 +327,9 @@ for i in l:
     l_final.append(i[:16])
 # print(l_final)
 PC=0
+x_axis = 0
+x =[]
+y=[]
 def b_pc(PC):
     b_pc = bin(PC)[2:]
     while len(b_pc)<8:
@@ -309,144 +337,157 @@ def b_pc(PC):
     return b_pc
 for q in range(256):
     instruction = l_final[PC]
-    output.write(b_pc(PC))
+    y.append(PC)
+    x.append(x_axis+1)
+    x_axis+=1
+    output.write(str(b_pc(PC))+ " ")
     if instruction[:5] == "10000":
         add_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items])+" ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10001":
         sub_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10010":
         movi(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10100":
         ld(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10101":
         st(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10110":
         mul_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11000":
         rs(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11001":
         ls(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11010":
         xor_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11011":
         or_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11100":
         and_func(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11111":
         jmp(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "01100":
         jlt(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "01101":
         jgt(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "01111":
         je(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10011":
         movreg(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "10111":
         divide(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11101":
         invert(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "11110":
         cmp(instruction)
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
     elif instruction[:5] == "01010":
         for items in range(7):
-            output.write(register_list[items])
+            output.write(str(register_list[items]) + " ")
         output.write("\n")
-        for i in range(256):
-            output.write(mem[i]+"\n")
+        # for i in range(256):
+        #     print(mem[i])
         break
+for i in range(256):
+    output.write(str((mem[i])) + "\n")
+#
+# print(x)
+# print(y)
+import matplotlib.pyplot as plt
+plt.scatter(x,y)
+plt.xlabel("x-axis")
+plt.ylabel("y-axis")
+plt.show()
