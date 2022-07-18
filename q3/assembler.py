@@ -82,7 +82,7 @@ def typeb(opcode, register_dict, list_instr):
         mantissa = float_binary[len(float_binary)-exp-n_deci_val:]
         if (len(mantissa)<5):
             mantissa = mantissa + (5-len(mantissa))*'0'
-        elif (len(mantissa)>3):
+        elif (len(mantissa)>5):
             output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
             return 1
         #print(mantissa)
