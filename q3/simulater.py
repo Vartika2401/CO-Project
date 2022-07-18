@@ -49,13 +49,13 @@ def add_func(machine_ins):
     if (len(sum)>16):
         register_list[reg3] = '0000000000000000'
         # overflow flag is set
-        temp_flag = list(register_list[6])
+        temp_flag = list(register_list[7])
         temp_flag[12] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
 
     elif (len(sum)<=16):
         sum = (16 - len(sum))*"0" + sum
-        register_list[6] = '0000000000000000'
+        register_list[7] = '0000000000000000'
         register_list[reg3] = sum
 
     PC+=1
@@ -70,9 +70,9 @@ def sub_func(machine_ins):
     if (diff < 0):
         register_list[reg3] = '0000000000000000'
         # overflow flag is set
-        temp_flag = list(register_list[6])
+        temp_flag = list(register_list[7])
         temp_flag[12] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
 
     else:
         diff = bin(diff)
@@ -80,7 +80,7 @@ def sub_func(machine_ins):
 
         if (len(diff)<16):
             diff = (16 - len(diff))*"0" + diff
-        register_list[6] = '0000000000000000'
+        register_list[7] = '0000000000000000'
         register_list[reg3] = diff
 
     PC+=1
@@ -96,13 +96,13 @@ def mul_func(machine_ins):
     if (len(prod)>16):
         register_list[reg3] = '0000000000000000'
         # overflow flag is set
-        temp_flag = list(register_list[6])
+        temp_flag = list(register_list[7])
         temp_flag[12] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
 
     elif (len(prod)<=16):
         prod = (16 - len(prod))*"0" + prod
-        register_list[6] = '0000000000000000'
+        register_list[7] = '0000000000000000'
         register_list[reg3] = prod
 
     PC+=1
@@ -122,7 +122,7 @@ def xor_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     register_list[reg3] = reg3_val
 
     PC+=1
@@ -142,7 +142,7 @@ def or_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     register_list[reg3] = reg3_val
 
     PC+=1
@@ -162,7 +162,7 @@ def and_func(machine_ins):
 
     if (len(reg3_val)<16):
         reg3_val = (16 - len(reg3_val))*"0" + reg3_val
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     register_list[reg3] = reg3_val
     
     PC+=1
@@ -175,7 +175,7 @@ def movi(machine_ins):
     imm = machine_ins[8:]
     register_list[reg] = "00000000"+imm
 
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     PC+=1
 
 def rs(machine_ins):
@@ -189,7 +189,7 @@ def rs(machine_ins):
         register_list[reg] = register_list[reg][imm:]
         register_list[reg] = register_list[reg] + imm*"0"
     
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     PC+=1
         
 def ls(machine_ins):
@@ -203,7 +203,7 @@ def ls(machine_ins):
         register_list[reg] = register_list[reg][0:(16-imm)]
         register_list[reg] = imm*"0" + register_list[reg]
     
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     PC+=1
 
 # Type C
@@ -263,20 +263,20 @@ def cmp(machine_ins):
     reg1_val = int(register_list[reg1_i], 2)
     reg2_val = int(register_list[reg2_i], 2)
     if reg1_val > reg2_val:
-        temp_flag = register_list[6]
+        temp_flag = register_list[7]
         temp_flag = list(temp_flag)
         temp_flag[14] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
     elif reg1_val < reg2_val:
-        temp_flag = register_list[6]
+        temp_flag = register_list[7]
         temp_flag = list(temp_flag)
         temp_flag[13] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
     else:
-        temp_flag = register_list[6]
+        temp_flag = register_list[7]
         temp_flag = list(temp_flag)
         temp_flag[15] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
     PC += 1
 
 # Type D
@@ -310,7 +310,7 @@ def jlt(machine_ins):
     global PC
     global register_list
     mem_add=machine_ins[9:]
-    l=register_list[6][13]
+    l=register_list[7][13]
     if l==1:
         PC=mem_add
     else:
@@ -320,7 +320,7 @@ def jgt(machine_ins):
     global PC
     global register_list
     mem_add=machine_ins[9:]
-    g=register_list[6][14]
+    g=register_list[7][14]
     if g==1:
         PC=mem_add
     else:
@@ -330,7 +330,7 @@ def je(machine_ins):
     global PC
     global register_list
     mem_add=machine_ins[9:]
-    e=register_list[6][15]
+    e=register_list[7][15]
     if e==1:
         PC=mem_add
     else:
@@ -349,13 +349,13 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     if (len(sum)>8):
         register_list[reg3] = '0000000000000000'
         # overflow flag is set
-        temp_flag = list(register_list[6])
+        temp_flag = list(register_list[7])
         temp_flag[12] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
 
     elif (len(sum)<=8):
         sum = (16 - len(sum))*"0" + sum
-        register_list[6] = '0000000000000000'
+        register_list[7] = '0000000000000000'
         register_list[reg3] = sum
 
     PC+=1
@@ -370,9 +370,9 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
     if (diff < 0):
         register_list[reg3] = '0000000000000000'
         # overflow flag is set
-        temp_flag = list(register_list[6])
+        temp_flag = list(register_list[7])
         temp_flag[12] = '1'
-        register_list[6] = ''.join(temp_flag)
+        register_list[7] = ''.join(temp_flag)
 
     else:
         diff = bin(diff)
@@ -380,7 +380,7 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
 
         if (len(diff)<8):
             diff = (16 - len(diff))*"0" + diff
-        register_list[6] = '0000000000000000'
+        register_list[7] = '0000000000000000'
         register_list[reg3] = diff
 
     PC+=1
@@ -392,7 +392,7 @@ def movf(machine_ins):
     imm = machine_ins[8:]
     register_list[reg] = "00000000"+imm
 
-    register_list[6] = '0000000000000000'
+    register_list[7] = '0000000000000000'
     PC+=1
 
 

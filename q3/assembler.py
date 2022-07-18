@@ -56,28 +56,40 @@ def typeb(opcode, register_dict, list_instr):
 
     if random[i][0] == "movf":
         op = "00010"
-        float_num = float(list_instr[2][1:])
-        int_val = int(float_num)
-        deci_val = float_num - int_val
-        # print(deci_val)
-        deci_len = len(str(deci_val)) - 2
-        # print(deci_len)
-        deci_val = int(deci_val * (10**deci_len))
-        # print(deci_val)
-        b_int_val = bin(int_val)[2:]
-        b_deci_val = bin(deci_val)[2:]
+        num = list_instr[2][1:]
+        num_l = num.split(".")
+        int_binary = bin(int(num_l[0]))[2:]
+        n_deci_val = len(num_l[1])
 
-        if len(b_int_val)>3 or len(b_deci_val)>5:      # max floating is with mantissa 11111 and exp 111 i.e. 1.11111(in binary) * 2**7 = 252
+        exp = 0
+        if (len(int_binary) > 1):
+            exp = len(int_binary) - 1
+        #print("exp : ",exp)
+
+        now_num = int(float(num)*(2**n_deci_val))
+        #print("now_num : ",now_num)
+        float_binary = bin(now_num)[2:]
+        #print("float_binary : ",float_binary)
+
+        exp_b = bin(exp)[2:]
+        if (len(exp_b)<3):
+            exp_b = (3-len(exp_b))*'0' + exp_b
+        elif (len(exp_b)>3):
             output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
             return 1
+        #print(exp_b)
 
-        if len(b_int_val)<3:
-            b_int_val = (3-len(b_int_val)) * "0" + b_int_val
+        mantissa = float_binary[len(float_binary)-exp-n_deci_val:]
+        if (len(mantissa)<5):
+            mantissa = mantissa + (5-len(mantissa))*'0'
+        elif (len(mantissa)>3):
+            output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
+            return 1
+        #print(mantissa)
 
-        if len(b_deci_val)<5:
-            b_deci_val = b_deci_val + (5-len(b_deci_val)) * "0"
-
-        b = b_int_val + b_deci_val
+        float_arithmatic = exp_b + mantissa
+        #print(float_arithmatic)
+        b = float_arithmatic
         
     else:
         if type(eval(list_instr[2][1:])) != int:
