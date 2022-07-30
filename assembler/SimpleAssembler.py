@@ -40,7 +40,7 @@ def a(list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
         output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
         return 1
-    output.write(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
+    answers.append(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
         list_instr[3]]+"\n")
 
 
@@ -69,7 +69,7 @@ def typeb(opcode, register_dict, list_instr):
         while len(b) != 8:
             b = '0' + b
         mc = op + r + b
-        output.write(mc + "\n")
+        answers.append(mc + "\n")
 
 
 def typeC(opcode, register_dict, list_instr):
@@ -91,7 +91,7 @@ def typeC(opcode, register_dict, list_instr):
     	mc = op + '00000' + r2 + r1
     else:
     	mc = op + '00000' + r1 + r2
-    output.write(mc + "\n")
+    answers.append(mc + "\n")
 
 
 def typed(opcode, register_dict, list_instr):
@@ -110,7 +110,7 @@ def typed(opcode, register_dict, list_instr):
     while len(mem_add) != 8:
         mem_add = "0" + mem_add
     ans = op + r + mem_add
-    output.write(ans + "\n")
+    answers.append(ans + "\n")
 
 
 def typee(opcode, register_dict, list_instr):
@@ -129,7 +129,7 @@ def typee(opcode, register_dict, list_instr):
         mem = "0"+mem
 
     ans = op + "000"+mem
-    output.write(ans + "\n")
+    answers.append(ans + "\n")
 
 random = []
 file = sys.stdin
@@ -143,6 +143,7 @@ all_line = []
 t_l=0
 var_error=0
 line_num = 0
+answers = []
 error = False
 for line in file:
     list_instr = []
@@ -184,43 +185,64 @@ if error==False:
         if error == False:
             if random[i][0] == "hlt" and i!=count-1:
                 output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: program closed before end"+"\n")
+                error = True
                 break
             elif random[i][0] not in opcode.keys():
                 output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: wrong syntax!!")
+                error = True
+
                 break
             # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
             #     print("error: unavilable reg called!!")
             elif opcode[random[i][0]][1] == "a":
                 ans = a(random[i])
                 if ans == 1:
+                    error = True
+
                     break
             elif len(random[i])==3 and random[i][2][0:1] == "$":
                 ans = typeb(opcode, register_dict, random[i])
                 if ans ==1:
+                    error = True
+
                     break
             elif opcode[random[i][0]][1] == "c":
                 ans = typeC(opcode, register_dict, random[i])
                 if ans == 1:
+                    error = True
+
                     break
             elif opcode[random[i][0]][1] == "d":
                 if random[i][2] in var:
                     ans = typed(opcode, register_dict, random[i])
                     if ans == 1:
+                        error = True
+
                         break
                 else:
                     ans = "Line"+str(all_line.index(random[i])+1)+": ERROR: variable not defined"
                     output.write(ans)
+                    error = True
+
                     break
             elif opcode[random[i][0]][1] == "e":
                 if random[i][1] in labels:
                     ans = typee(opcode,register_dict,random[i])
                     if ans ==1:
+                        error = True
+
                         break
                 else:
                     output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: label not defined")
+                    error = True
+
                     break
             elif random[i][0]=="hlt" and i==count-1:
-                output.write("0101000000000000")
+                answers.append("0101000000000000")
     if random[-1][0]!="hlt" and i==count-1:
         output.write("Line"+str(all_line.index(random[i])+1)+" ERROR: Program end command missing"+"\n")
+        error = True
+    if error == False:
+        for i in answers:
+            output.write(i)
     # output.close()
