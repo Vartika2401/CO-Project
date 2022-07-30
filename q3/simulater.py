@@ -210,11 +210,11 @@ def ls(machine_ins):
 def movreg(machine_ins):
     global PC
     global register_list
-    reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg1 = machine_ins[10:13]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
-    register_list[reg1_i] = register_list[reg2_i]
+    register_list[reg2_i] = register_list[reg1_i]
     PC += 1
 
 def divide(machine_ins):
@@ -239,8 +239,8 @@ def divide(machine_ins):
 def invert(machine_ins):
     global PC
     global register_list
-    reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg1 = machine_ins[10:13]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     reg1_val = register_list[reg1_i]
@@ -256,8 +256,8 @@ def invert(machine_ins):
 def cmp(machine_ins):
     global PC
     global register_list
-    reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg1 = machine_ins[10:13]
+    reg2 = machine_ins[13:]
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     reg1_val = int(register_list[reg1_i], 2)
