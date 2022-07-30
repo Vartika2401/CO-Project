@@ -220,8 +220,8 @@ def movreg(machine_ins):
 def divide(machine_ins):
     global PC
     global register_list
-    reg3 = machine_ins[7:12]
-    reg4 = machine_ins[12:]
+    reg3 = machine_ins[10:13]
+    reg4 = machine_ins[13:]
     reg1_i = int(reg3, 2)
     reg2_i = int(reg4, 2)
     q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
