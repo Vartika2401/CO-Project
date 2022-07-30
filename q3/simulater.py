@@ -224,16 +224,19 @@ def divide(machine_ins):
     reg4 = machine_ins[13:]
     reg1_i = int(reg3, 2)
     reg2_i = int(reg4, 2)
-    q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
-    r_val = bin(int(register_list[reg1_i], 2) % int(register_list[reg2_i], 2))[2:]
-    while len(q_val) < 16:
-        q_val = '0' + q_val
+    if (int(register_list[reg2_i], 2) != 0):
+        q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
+        r_val = bin(int(register_list[reg1_i], 2) % int(register_list[reg2_i], 2))[2:]
+        while len(q_val) < 16:
+            q_val = '0' + q_val
 
-    while len(r_val) < 16:
-        r_val = '0' + r_val
+        while len(r_val) < 16:
+            r_val = '0' + r_val
 
-    register_list[0] = q_val
-    register_list[1] = r_val
+        register_list[0] = q_val
+        register_list[1] = r_val
+    else:
+        print("Division by zero is not possible!!")
     PC += 1
 
 def invert(machine_ins):
@@ -337,27 +340,62 @@ def je(machine_ins):
         PC+=1
 
 # Floating Point
+def bfloat_to_float(num):
+    exp_num = int(num[0:3],2)
+    deci_num = int(num[3:],2)
+    val = (1+(deci_num/32))*(2**(exp_num))
+    return val
+
+def float_to_bfloat(num):
+    num_l = num.split(".")
+    int_binary = bin(int(num_l[0]))[2:]
+    n_deci_val = len(num_l[1])
+
+    exp = 0
+    if (len(int_binary) > 1):
+        exp = len(int_binary) - 1
+    #print("exp : ",exp)
+
+    now_num = int(float(num)*(2**n_deci_val))
+    #print("now_num : ",now_num)
+    float_binary = bin(now_num)[2:]
+    #print("float_binary : ",float_binary)
+
+    exp_b = bin(exp)[2:]
+    if (len(exp_b)<3):
+        exp_b = (3-len(exp_b))*'0' + exp_b
+    elif (len(exp_b)>3):
+        return -1
+    #print(exp_b)
+
+    mantissa = float_binary[len(float_binary)-exp-n_deci_val:]
+    if (len(mantissa)<5):
+        mantissa = mantissa + (5-len(mantissa))*'0'
+    elif (len(mantissa)>5):
+        return -1
+    #print(mantissa)
+
+    float_arithmatic = exp_b + mantissa
+    return float_arithmatic
+
+
 def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     global PC
     global register_list
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
-    sum = bin(int(register_list[reg1][8:],2) + int(register_list[reg2][8:],2))
-    sum = sum[2:]
+    reg1_val = bfloat_to_float(reg1)
+    reg2_val = bfloat_to_float(reg2)
 
-    if (len(sum)>8):
-        register_list[reg3] = '0000000000000000'
+    reg3_val = reg1_val + reg2_val
+    if (float_to_bfloat(reg3_val) == -1):
         # overflow flag is set
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
         register_list[7] = ''.join(temp_flag)
-
-    elif (len(sum)<=8):
-        sum = (16 - len(sum))*"0" + sum
-        register_list[7] = '0000000000000000'
-        register_list[reg3] = sum
-
+    else:
+        register_list[reg3] = float_to_bfloat(reg3_val)
     PC+=1
 
 def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
@@ -366,23 +404,17 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
-    diff = int(register_list[reg1][8:],2) - int(register_list[reg2][8:],2)
-    if (diff < 0):
-        register_list[reg3] = '0000000000000000'
+    reg1_val = bfloat_to_float(reg1)
+    reg2_val = bfloat_to_float(reg2)
+
+    reg3_val = reg1_val - reg2_val
+    if (float_to_bfloat(reg3_val) == -1 or reg3_val<0):
         # overflow flag is set
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
         register_list[7] = ''.join(temp_flag)
-
     else:
-        diff = bin(diff)
-        diff = diff[2:]
-
-        if (len(diff)<8):
-            diff = (16 - len(diff))*"0" + diff
-        register_list[7] = '0000000000000000'
-        register_list[reg3] = diff
-
+        register_list[reg3] = float_to_bfloat(reg3_val)
     PC+=1
 
 def movf(machine_ins):
