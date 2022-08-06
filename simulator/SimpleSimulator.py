@@ -49,7 +49,7 @@ def rs(instruction):
     imm = instruction[8:]
     for i in range(7):
         if reg == register_dict["R" + str(i)]:
-            print(int(imm,2))
+            #print(int(imm,2))
             if int(imm,2)>16:
                 register_list[i]="0000000000000000"
             else:
@@ -86,7 +86,7 @@ def add_func(machine_ins):
     sum = sum[2:]
 
     if (len(sum)>16):
-        register_list[reg3] = '0000000000000000'
+        register_list[reg3] = sum[-16:]
         # overflow flag is set
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
@@ -129,7 +129,7 @@ def mul_func(machine_ins):
     prod = bin(int(register_list[reg1],2) * int(register_list[reg2],2))
     prod = prod[2:]
     if (len(prod)>16):
-        register_list[reg3] = '0000000000000000'
+        register_list[reg3] = prod[-16:]
         # overflow flag is set
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
@@ -282,11 +282,11 @@ def movreg(machine_ins):
 def divide(machine_ins):
     global PC
     global register_list
-    reg3 = machine_ins[7:12]
-    reg4 = machine_ins[12:]
+    reg3 = machine_ins[10:13]
+    reg4 = machine_ins[13:]
     reg1_i = int(reg3, 2)
     reg2_i = int(reg4, 2)
-    print(reg2_i,reg1_i)
+    #print(reg2_i,reg1_i)
     q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
     r_val = bin(int(register_list[reg1_i], 2) % int(register_list[reg2_i], 2))[2:]
     while len(q_val) < 16:
@@ -303,15 +303,18 @@ def invert(machine_ins):
     global PC
     global register_list
     reg1 = machine_ins[10:13]
-    print(reg1)
+    #print(reg1)
     reg2 = machine_ins[13:]
-    print(reg2)
+    #print(reg2)
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     reg1_val = register_list[reg1_i]
-    reg1_val = int(reg1_val, 2)
-    reg1_val = ~reg1_val
-    reg1_val = bin(reg1_val)[2:]
+    # print(list(reg1_val))
+    answer = []
+    for i in list(reg1_val):
+        x = str(1-int(i))
+        answer.append(x)
+    reg1_val = "".join(answer)
     while len(reg1_val) < 16:
         reg1_val = '0' + reg1_val
 
@@ -354,8 +357,8 @@ def cmp(machine_ins):
     PC += 1
 
 
-MEM = open("t.txt","r")
-output = open("a.txt","w")
+MEM = sys.stdin
+output = sys.stdout
 mem_dict = {}
 
 l = []
@@ -520,6 +523,7 @@ while halted==False:
         # for i in range(256):
         #     print(mem[i])
     elif instruction[:5] == "01010":
+        register_list[7]="0000000000000000"
         for items in range(8):
             output.write(str(register_list[items]) + " ")
         output.write("\n")
@@ -534,5 +538,4 @@ for i in range(256):
 # plt.scatter(x,y)
 # plt.xlabel("x-axis")
 # plt.ylabel("y-axis")
-# plt.scatter(mem_dict.keys(),mem_dict.values(),c="red")
-# plt.show()
+# plt.scatter
