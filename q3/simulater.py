@@ -640,10 +640,3 @@ while halted==False:
         break
 for i in range(256):
     output.write(str((mem[i])) + "\n")
-
-import matplotlib.pyplot as plt
-plt.scatter(x,y)
-plt.xlabel("x-axis")
-plt.ylabel("y-axis")
-plt.scatter(mem_dict.keys(),mem_dict.values(),c="red")
-plt.show()
