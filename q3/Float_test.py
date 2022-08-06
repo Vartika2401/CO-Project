@@ -7,7 +7,10 @@ def bfloat_to_float(num):
 def float_to_bfloat(num):
     num_l = num.split(".")
     int_binary = bin(int(num_l[0]))[2:]
-    n_deci_val = len(num_l[1])
+    if (len(num_l) == 1):
+        n_deci_val = 0
+    else:
+        n_deci_val = len(num_l[1])
 
     exp = 0
     if (len(int_binary) > 1):
@@ -36,5 +39,5 @@ def float_to_bfloat(num):
     float_arithmatic = exp_b + mantissa
     return float_arithmatic
 
-print(bfloat_to_float("00111100"))
-print(float_to_bfloat("3.75"))
+print(bfloat_to_float("00110000"))
+# print(float_to_bfloat("3"))

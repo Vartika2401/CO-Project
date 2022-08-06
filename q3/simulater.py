@@ -352,15 +352,24 @@ def je(machine_ins):
 
 # Floating Point
 def bfloat_to_float(num):
+    print("bfloat to float for",num)
+    num = str(num)
     exp_num = int(num[0:3],2)
+    # print("exp_num",exp_num)
     deci_num = int(num[3:],2)
+    # print("deci_num",deci_num)
     val = (1+(deci_num/32))*(2**(exp_num))
+
     return val
 
 def float_to_bfloat(num):
+    num = str(num)
     num_l = num.split(".")
     int_binary = bin(int(num_l[0]))[2:]
-    n_deci_val = len(num_l[1])
+    if (len(num_l) == 1):
+        n_deci_val = 0
+    else:
+        n_deci_val = len(num_l[1])
 
     exp = 0
     if (len(int_binary) > 1):
@@ -396,8 +405,9 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
-    reg1_val = bfloat_to_float(reg1)
-    reg2_val = bfloat_to_float(reg2)
+    reg1_val = bfloat_to_float(register_list[reg1][8:])
+    # print(reg1_val)
+    reg2_val = bfloat_to_float(register_list[reg2][8:])
 
     reg3_val = reg1_val + reg2_val
     if (float_to_bfloat(reg3_val) == -1):
@@ -417,8 +427,8 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
-    reg1_val = bfloat_to_float(reg1)
-    reg2_val = bfloat_to_float(reg2)
+    reg1_val = bfloat_to_float(register_list[reg1][8:])
+    reg2_val = bfloat_to_float(register_list[reg2][8:])
 
     reg3_val = reg1_val - reg2_val
     if (float_to_bfloat(reg3_val) == -1 or reg3_val<0):
@@ -443,10 +453,10 @@ def movf(machine_ins):
     PC+=1
 
 
-MEM = sys.stdin
-output = sys.stdout
-# MEM = open('tezt.txt','r')
-# output = open("answer.txt", "w")
+# MEM = sys.stdin
+# output = sys.stdout
+MEM = open('tezt.txt','r')
+output = open("answer.txt", "w")
 mem_dict = {}
 
 l = []
