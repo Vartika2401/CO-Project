@@ -96,7 +96,7 @@ def typeb_err(list_instr):
     return 0
 
 def typeC_err(list_instr):
-    if (list_instr[1] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[1]=='FLAGS'):
+    if (list_instr[0] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[2]=='FLAGS'):
         output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
         return 1
     return 0
@@ -201,7 +201,7 @@ def typeb(opcode, register_dict, list_instr):
     output.write(mc + "\n")
 
 def typeC(opcode, register_dict, list_instr):
-    if (list_instr[1] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[1]=='FLAGS'):
+    if (list_instr[0] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[2]=='FLAGS'):
         output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
         return 1
     for keys in opcode.keys():
@@ -216,7 +216,10 @@ def typeC(opcode, register_dict, list_instr):
         if str(list_instr[2]).lower() == str(reg).lower():
             r2 = register_dict[reg]
 
-    mc = op + '00000' + r1 + r2
+    if r2=="111":
+    	mc = op + '00000' + r2 + r1
+    else:
+    	mc = op + '00000' + r1 + r2
     output.write(mc + "\n")
 
 def typed(opcode, register_dict, list_instr):

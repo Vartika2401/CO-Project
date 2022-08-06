@@ -402,6 +402,7 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     reg3_val = reg1_val + reg2_val
     if (float_to_bfloat(reg3_val) == -1):
         # overflow flag is set
+        register_list[reg3] = '0000000000000000'
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
         register_list[7] = ''.join(temp_flag)
@@ -422,6 +423,7 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
     reg3_val = reg1_val - reg2_val
     if (float_to_bfloat(reg3_val) == -1 or reg3_val<0):
         # overflow flag is set
+        register_list[reg3] = '0000000000000000'
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
         register_list[7] = ''.join(temp_flag)
@@ -638,10 +640,3 @@ while halted==False:
         break
 for i in range(256):
     output.write(str((mem[i])) + "\n")
-
-import matplotlib.pyplot as plt
-plt.scatter(x,y)
-plt.xlabel("x-axis")
-plt.ylabel("y-axis")
-plt.scatter(mem_dict.keys(),mem_dict.values(),c="red")
-plt.show()
