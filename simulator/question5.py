@@ -103,9 +103,9 @@ for ch in mem_space:
 
 val=int(val)
 #print(unit)
-if unit=="b":
+if "b" in unit:
 
-    mem_space_value = int(int(mem_space[:-1])/8)
+    mem_space_value = int(val/8)
 elif 'Word' in unit:
     mem_space_value=val
 else:
