@@ -32,6 +32,88 @@ register_dict = {'R0': '000',
                  'R6': '110',
                  'FLAGS': '111'}
 
+
+def typea_err(list_instr):
+    if len(list_instr)!=4:
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: missing arguments"+"\n")
+        return 1
+    if list_instr[1] not in register_dict or list_instr[2] not in register_dict or list_instr[3] not in register_dict:
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: wrong arguments given"+"\n")
+        return 1
+    if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS' or list_instr[3] == 'FLAGS':
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
+        return 1
+    return 0
+
+def typeb_err(list_instr):
+    if list_instr[1] == 'FLAGS':
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
+        return 1
+    if float(list_instr[2][1:])<0:
+        output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: negative numbers are not allowed")
+        return 1
+
+    if random[i][0] == "movf":
+        num = list_instr[2][1:]
+        num_l = num.split(".")
+        int_binary = bin(int(num_l[0]))[2:]
+        n_deci_val = len(num_l[1])
+
+        exp = 0
+        if (len(int_binary) > 1):
+            exp = len(int_binary) - 1
+        #print("exp : ",exp)
+
+        now_num = int(float(num)*(2**n_deci_val))
+        #print("now_num : ",now_num)
+        float_binary = bin(now_num)[2:]
+        #print("float_binary : ",float_binary)
+
+        exp_b = bin(exp)[2:]
+        if (len(exp_b)<3):
+            exp_b = (3-len(exp_b))*'0' + exp_b
+        elif (len(exp_b)>3):
+            output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
+            return 1
+        #print(exp_b)
+
+        mantissa = float_binary[len(float_binary)-exp-n_deci_val:]
+        if (len(mantissa)<5):
+            mantissa = mantissa + (5-len(mantissa))*'0'
+        elif (len(mantissa)>5):
+            output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
+            return 1
+        #print(mantissa)
+    else:
+        if type(eval(list_instr[2][1:])) != int:
+            output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: floating numbers not allowed")
+            return 1
+
+        b = str(bin(int(list_instr[2][1:])))[2:]
+        if len(b)>8:
+            output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: Value exceeding the upper limit"+"\n")
+            return 1
+    return 0
+
+def typeC_err(list_instr):
+    if (list_instr[1] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[1]=='FLAGS'):
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
+        return 1
+    return 0
+
+def typed_err(list_instr):
+    if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS':
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
+        return 1
+    return 0
+
+def typee_err(list_instr):
+    if list_instr[1] == 'FLAGS':
+        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
+        return 1
+    return 0
+
+
 def typea(list_instr):
     if len(list_instr)!=4:
         output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: missing arguments"+"\n")
@@ -44,7 +126,6 @@ def typea(list_instr):
         return 1
     output.write(opcode[list_instr[0]][0] + "00" + register_dict[list_instr[1]] + register_dict[list_instr[2]] + register_dict[
         list_instr[3]]+"\n")
-
 
 def typeb(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
@@ -119,7 +200,6 @@ def typeb(opcode, register_dict, list_instr):
     mc = op + r + b
     output.write(mc + "\n")
 
-
 def typeC(opcode, register_dict, list_instr):
     if (list_instr[1] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[1]=='FLAGS'):
         output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
@@ -139,7 +219,6 @@ def typeC(opcode, register_dict, list_instr):
     mc = op + '00000' + r1 + r2
     output.write(mc + "\n")
 
-
 def typed(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS':
         output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register')
@@ -157,7 +236,6 @@ def typed(opcode, register_dict, list_instr):
         mem_add = "0" + mem_add
     ans = op + r + mem_add
     output.write(ans + "\n")
-
 
 def typee(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS':
@@ -178,10 +256,10 @@ def typee(opcode, register_dict, list_instr):
     output.write(ans + "\n")
 
 random = []
-#file = sys.stdin
-#output = sys.stdout
-file = open("tezt.txt", "r")
-output = open("answer.txt", "w")
+file = sys.stdin
+output = sys.stdout
+# file = open("tezt_a.txt", "r")
+# output = open("answer_a.txt", "w")
 count = 0
 var_count = 0
 var = []
@@ -227,6 +305,60 @@ for line in file:
             random.append(list_instr[1:])
             count+=1
 # print(all_line)
+if error==False:
+    for i in range(count):
+        if error == False:
+            if random[i][0] == "hlt" and i!=count-1:
+                output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: program closed before end"+"\n")
+                error = True
+                break
+            elif random[i][0] not in opcode.keys():
+                output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: wrong syntax!!")
+                error = True
+                break
+            # elif random[i][1] not in register_dict.keys() and opcode[random[i][0]][1]!="e" and opcode[random[i][0]][1]!="f" and i!=count-1:
+            #     print("error: unavilable reg called!!")
+            elif opcode[random[i][0]][1] == "a":
+                ans = typea_err(random[i])
+                if ans == 1:
+                    error = True
+                    break
+            elif len(random[i])==3 and random[i][2][0:1] == "$":
+                ans = typeb_err(random[i])
+                if ans == 1:
+                    error = True
+                    break
+            elif opcode[random[i][0]][1] == "c":
+                ans = typeC_err(random[i])
+                if ans == 1:
+                    error = True
+                    break
+            elif opcode[random[i][0]][1] == "d":
+                if random[i][2] in var:
+                    ans = typed_err(random[i])
+                    if ans == 1:
+                        error = True
+                        break
+                else:
+                    ans = "Line"+str(all_line.index(random[i])+1)+": ERROR: variable not defined"
+                    output.write(ans)
+                    error = True
+                    break
+            elif opcode[random[i][0]][1] == "e":
+                if random[i][1] in labels:
+                    ans = typee_err(random[i])
+                    if ans == 1:
+                        error = True
+                        break
+                else:
+                    output.write("Line"+str(all_line.index(random[i])+1)+": ERROR: label not defined")
+                    error = True
+                    break
+    if random[-1][0]!="hlt" and i==count-1:
+        output.write("Line"+str(all_line.index(random[i])+1)+" ERROR: Program end command missing"+"\n")
+        error = True
+    # output.close()
+
 if error==False:
     for i in range(count):
         if error == False:

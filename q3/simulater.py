@@ -441,10 +441,10 @@ def movf(machine_ins):
     PC+=1
 
 
-# MEM = sys.stdin
-# output = sys.stdout
-MEM = open('tezt.txt','r')
-output = open("answer.txt", "w")
+MEM = sys.stdin
+output = sys.stdout
+# MEM = open('tezt.txt','r')
+# output = open("answer.txt", "w")
 mem_dict = {}
 
 l = []
