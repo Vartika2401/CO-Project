@@ -18,7 +18,10 @@ opcode = {"add": ["10000", "a"],
           "jlt": ["01100", "e"],
           "jgt": ["01101", "e"],
           "je": ["01111", "e"],
-          "hlt": ["01010", "f"]
+          "hlt": ["01010", "f"],
+          "addf": ["00000", "a"],
+          "subf": ["00001", "a"],
+          "movf": ["00010", "b"]
 
           }
 register_dict = {'R0': '000',
@@ -51,7 +54,41 @@ def typeb(opcode, register_dict, list_instr):
     if type(eval(list_instr[2][1:]))!=int or float(list_instr[2][1:])<0:
         output.write("Line"+str(all_line.index(list_instr)+1)+": ERROR: negative/floating numbers not allowed")
         return 1
+    if float(list_instr[2][1:]) < 0:
+        output.write("Line" + str(all_line.index(list_instr) + 1) + ": ERROR: negative numbers are not allowed")
+        return 1
+    if random[i][0] == "movf":
+        num = list_instr[2][1:]
+        num_l = num.split(".")
+        int_binary = bin(int(num_l[0]))[2:]
+        n_deci_val = len(num_l[1])
 
+        exp = 0
+        if (len(int_binary) > 1):
+            exp = len(int_binary) - 1
+        # print("exp : ",exp)
+
+        now_num = int(float(num) * (2 ** n_deci_val))
+        # print("now_num : ",now_num)
+        float_binary = bin(now_num)[2:]
+        # print("float_binary : ",float_binary)
+
+        exp_b = bin(exp)[2:]
+        if (len(exp_b) < 3):
+            exp_b = (3 - len(exp_b)) * '0' + exp_b
+        elif (len(exp_b) > 3):
+            output.write("Line" + str(all_line.index(
+                list_instr) + 1) + ": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
+            return 1
+        # print(exp_b)
+
+        mantissa = float_binary[len(float_binary) - exp - n_deci_val:]
+        if (len(mantissa) < 5):
+            mantissa = mantissa + (5 - len(mantissa)) * '0'
+        elif (len(mantissa) > 5):
+            output.write("Line" + str(all_line.index(
+                list_instr) + 1) + ": ERROR: number cannot be represented in 8 bits(3 bit exponential and 5 bit mantissa)")
+            return 1
     if random[i][0] != "mov":
         for keys in opcode.keys():
             if str(list_instr[0]).lower() == str(keys).lower():
