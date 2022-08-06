@@ -41,6 +41,7 @@ def movi(instruction):
         if reg==register_dict["R"+str(i)]:
             register_list[i]="00000000"+str(imm)
     PC+=1
+    register_list[7]='0000000000000000'
 def rs(instruction):
     global PC
     global register_list
@@ -57,6 +58,7 @@ def rs(instruction):
                     register_list[i]="0"+register_list[i]
                 # print(register_list[i])
     PC+=1
+    register_list[7]='0000000000000000'
 def ls(instruction):
     global PC
     global register_list
@@ -73,6 +75,7 @@ def ls(instruction):
                     register_list[i] = register_list[i]+"0"
                 # print(register_list[i])
     PC+=1
+    register_list[7]='0000000000000000'
 def add_func(machine_ins):
     global PC
     global register_list
@@ -93,7 +96,6 @@ def add_func(machine_ins):
         sum = (16 - len(sum))*"0" + sum
         register_list[7] = '0000000000000000'
         register_list[reg3] = sum
-
     PC+=1
 def sub_func(machine_ins):
     global PC
@@ -117,7 +119,6 @@ def sub_func(machine_ins):
             diff = (16 - len(diff))*"0" + diff
         register_list[7] = '0000000000000000'
         register_list[reg3] = diff
-
     PC+=1
 def mul_func(machine_ins):
     global PC
@@ -165,12 +166,14 @@ def or_func(machine_ins):
     reg1 = int(machine_ins[7:10], 2)
     reg2 = int(machine_ins[10:13], 2)
     reg3 = int(machine_ins[13:16], 2)
-
+    # print(reg1,reg2,reg3)
     reg1_val = int(register_list[reg1], 2)
     reg2_val = int(register_list[reg2], 2)
 
     reg3_val = bin(reg1_val | reg2_val)
+    # print(reg1_val,reg2_val,reg3_val)
     reg3_val = reg3_val[2:]
+    # print(reg3_val)
 
     if (len(reg3_val) < 16):
         reg3_val = (16 - len(reg3_val)) * "0" + reg3_val
@@ -209,6 +212,7 @@ def ld(instruction):
     mem_add = instruction[8:]
     register_list[int(reg,2)]=mem[int(mem_add,2)]
     mem_dict[x[-1]]=int(mem_add,2)
+    register_list[7]='0000000000000000'
 def st(instruction):
     global register_list
     global mem
@@ -222,12 +226,14 @@ def st(instruction):
     a = int(mem_add,2)
     mem[a]=register_list[int(reg,2)]
     mem_dict[x[-1]]=a
+    register_list[7]='0000000000000000'
 def jmp(machine_ins):
     global PC
     global register_list
     mem_add=machine_ins[8:]
     # print(mem_add)
     PC=int(mem_add,2)
+    register_list[7]='0000000000000000'
     # print(PC)
 def jlt(machine_ins):
     global PC
@@ -238,6 +244,8 @@ def jlt(machine_ins):
         PC=int(mem_add,2)
     else:
         PC+=1
+
+    register_list[7]='0000000000000000'
 def jgt(machine_ins):
     global PC
     global register_list
@@ -247,6 +255,8 @@ def jgt(machine_ins):
         PC=int(mem_add,2)
     else:
         PC+=1
+
+    register_list[7]='0000000000000000'
 def je(machine_ins):
     global PC
     global register_list
@@ -258,6 +268,7 @@ def je(machine_ins):
     else:
         PC+=1
     # print(PC)
+    register_list[7]='0000000000000000'
 def movreg(machine_ins):
     global PC
     global register_list
@@ -267,6 +278,7 @@ def movreg(machine_ins):
     reg2_i = int(reg2, 2)
     register_list[reg2_i] = register_list[reg1_i]
     PC += 1
+    register_list[7]='0000000000000000'
 def divide(machine_ins):
     global PC
     global register_list
@@ -274,6 +286,7 @@ def divide(machine_ins):
     reg4 = machine_ins[12:]
     reg1_i = int(reg3, 2)
     reg2_i = int(reg4, 2)
+    print(reg2_i,reg1_i)
     q_val = bin(int(register_list[reg1_i], 2) // int(register_list[reg2_i], 2))[2:]
     r_val = bin(int(register_list[reg1_i], 2) % int(register_list[reg2_i], 2))[2:]
     while len(q_val) < 16:
@@ -285,11 +298,14 @@ def divide(machine_ins):
     register_list[0] = q_val
     register_list[1] = r_val
     PC += 1
+    register_list[7]='0000000000000000'
 def invert(machine_ins):
     global PC
     global register_list
-    reg1 = machine_ins[7:12]
-    reg2 = machine_ins[12:]
+    reg1 = machine_ins[10:13]
+    print(reg1)
+    reg2 = machine_ins[13:]
+    print(reg2)
     reg1_i = int(reg1, 2)
     reg2_i = int(reg2, 2)
     reg1_val = register_list[reg1_i]
@@ -302,6 +318,7 @@ def invert(machine_ins):
     register_list[reg2_i] = reg1_val
 
     PC += 1
+    register_list[7]='0000000000000000'
 def cmp(machine_ins):
     global PC
     global register_list
@@ -337,8 +354,8 @@ def cmp(machine_ins):
     PC += 1
 
 
-MEM = sys.stdin
-output = sys.stdout
+MEM = open("t.txt","r")
+output = open("a.txt","w")
 mem_dict = {}
 
 l = []
@@ -349,6 +366,7 @@ mem_count=0
 for i in l:
     l_final.append(i[:16])
     mem[mem_count]=i[:16]
+    # print(mem_count)
     mem_count+=1
 # print(l_final)
 PC=0
@@ -512,9 +530,9 @@ while halted==False:
 for i in range(256):
     output.write(str((mem[i])) + "\n")
 
-import matplotlib.pyplot as plt
-plt.scatter(x,y)
-plt.xlabel("x-axis")
-plt.ylabel("y-axis")
-plt.scatter(mem_dict.keys(),mem_dict.values(),c="red")
-plt.show()
+# import matplotlib.pyplot as plt
+# plt.scatter(x,y)
+# plt.xlabel("x-axis")
+# plt.ylabel("y-axis")
+# plt.scatter(mem_dict.keys(),mem_dict.values(),c="red")
+# plt.show()
