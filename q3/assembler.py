@@ -220,7 +220,7 @@ def typeC(opcode, register_dict, list_instr):
     	mc = op + '00000' + r2 + r1
     else:
     	mc = op + '00000' + r1 + r2
-    answers.append(mc + "\n")
+    output.write(mc + "\n")
 
 def typed(opcode, register_dict, list_instr):
     if list_instr[1] == 'FLAGS' or list_instr[2] == 'FLAGS':
