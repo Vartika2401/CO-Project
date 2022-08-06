@@ -352,7 +352,7 @@ def je(machine_ins):
 
 # Floating Point
 def bfloat_to_float(num):
-    print("bfloat to float for",num)
+    # print("bfloat to float for",num)
     num = str(num)
     exp_num = int(num[0:3],2)
     # print("exp_num",exp_num)
@@ -405,6 +405,8 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     reg1 = int(machine_ins[7:10],2)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
+    # print(reg1)
+    print(register_list[reg1][8:])
     reg1_val = bfloat_to_float(register_list[reg1][8:])
     # print(reg1_val)
     reg2_val = bfloat_to_float(register_list[reg2][8:])

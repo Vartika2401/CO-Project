@@ -39,5 +39,5 @@ def float_to_bfloat(num):
     float_arithmatic = exp_b + mantissa
     return float_arithmatic
 
-print(bfloat_to_float("00110000"))
-# print(float_to_bfloat("3"))
+print(bfloat_to_float("00010000"))
+print(float_to_bfloat("3"))
