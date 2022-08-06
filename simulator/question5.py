@@ -80,7 +80,7 @@ def type1(addressable_types, mem_space_value, old_add_len, unit, units):
 
 def type2(addressable_types, mem_space_value,unit, units):
     cpu=int(input("Input the number of bits of CPU: "))
-    v=int(math.log(cpu,2))
+    v=int(math.log(cpu/8,2))
     add_pin=int(input("Input address pins: "))
     i=0
     for keys in addressable_types.keys():
