@@ -96,9 +96,9 @@ def typeb_err(list_instr):
     return 0
 
 def typeC_err(list_instr):
-    if (list_instr[0] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[2]=='FLAGS'):
-        output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
-        return 1
+	if (list_instr[0] == 'FLAGS' or list_instr[2]=='FLAGS') and list_instr[0]!='mov' or (list_instr[0]=='mov' and list_instr[2]=='FLAGS'):
+		output.write(f'Line {str(all_line.index(list_instr)+1)} ERROR: {list_instr[0]} can\'t be used with FLAGS register\n')
+		return 1
     return 0
 
 def typed_err(list_instr):
