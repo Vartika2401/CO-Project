@@ -1,1 +1,0 @@
-Line 5 ERROR: mov can't be used with FLAGS register
