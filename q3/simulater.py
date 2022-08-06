@@ -359,7 +359,7 @@ def bfloat_to_float(num):
     deci_num = int(num[3:],2)
     # print("deci_num",deci_num)
     val = (1+(deci_num/32))*(2**(exp_num))
-
+    # print(val)
     return val
 
 def float_to_bfloat(num):
@@ -406,9 +406,10 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
     reg2 = int(machine_ins[10:13],2)
     reg3 = int(machine_ins[13:16],2)
     # print(reg1)
-    print(register_list[reg1][8:])
+    # print(register_list[reg1][8:])
     reg1_val = bfloat_to_float(register_list[reg1][8:])
     # print(reg1_val)
+    # print(register_list[reg2][8:])
     reg2_val = bfloat_to_float(register_list[reg2][8:])
 
     reg3_val = reg1_val + reg2_val
@@ -420,7 +421,7 @@ def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
         register_list[7] = ''.join(temp_flag)
     else:
         register_list[7] = '0000000000000000'
-        register_list[reg3] = float_to_bfloat(reg3_val)
+        register_list[reg3] = '00000000'+float_to_bfloat(reg3_val)
     PC+=1
 
 def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
@@ -435,13 +436,13 @@ def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
     reg3_val = reg1_val - reg2_val
     if (float_to_bfloat(reg3_val) == -1 or reg3_val<0):
         # overflow flag is set
-        register_list[reg3] = '0000000000000000'
+        register_list[reg3] = '0000000011111111'
         temp_flag = list(register_list[7])
         temp_flag[12] = '1'
         register_list[7] = ''.join(temp_flag)
     else:
         register_list[7] = '0000000000000000'
-        register_list[reg3] = float_to_bfloat(reg3_val)
+        register_list[reg3] = '00000000'+float_to_bfloat(reg3_val)
     PC+=1
 
 def movf(machine_ins):
