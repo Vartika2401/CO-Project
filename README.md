@@ -1,5 +1,7 @@
 # CSE112 Computer Organization Assignment
 
+Group Members : Vartika, Parisha Agrawal, Zubaida Fatima
+
 
 1)SimpleAssembler
 
