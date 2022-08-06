@@ -19,7 +19,10 @@ opcode = {"add": ["10000", "a"],
           "jlt": ["01100", "e"],
           "jgt": ["01101", "e"],
           "je": ["01111", "e"],
-          "hlt": ["01010", "f"]
+          "hlt": ["01010", "f"],
+          "addf": ["00000", "a"],
+          "subf": ["00001", "a"],
+          "movf": ["00010", "b"]
 
           }
 register_dict = {'R0': '000',
@@ -355,6 +358,109 @@ def cmp(machine_ins):
         # print(register_list[7])
 
     PC += 1
+def bfloat_to_float(num):
+    # print("bfloat to float for",num)
+    num = str(num)
+    exp_num = int(num[0:3],2)
+    # print("exp_num",exp_num)
+    deci_num = int(num[3:],2)
+    # print("deci_num",deci_num)
+    val = (1+(deci_num/32))*(2**(exp_num))
+    # print(val)
+    return val
+
+def float_to_bfloat(num):
+    num = str(num)
+    num_l = num.split(".")
+    int_binary = bin(int(num_l[0]))[2:]
+    if (len(num_l) == 1):
+        n_deci_val = 0
+    else:
+        n_deci_val = len(num_l[1])
+
+    exp = 0
+    if (len(int_binary) > 1):
+        exp = len(int_binary) - 1
+    #print("exp : ",exp)
+
+    now_num = int(float(num)*(2**n_deci_val))
+    #print("now_num : ",now_num)
+    float_binary = bin(now_num)[2:]
+    #print("float_binary : ",float_binary)
+
+    exp_b = bin(exp)[2:]
+    if (len(exp_b)<3):
+        exp_b = (3-len(exp_b))*'0' + exp_b
+    elif (len(exp_b)>3):
+        return -1
+    #print(exp_b)
+
+    mantissa = float_binary[len(float_binary)-exp-n_deci_val:]
+    if (len(mantissa)<5):
+        mantissa = mantissa + (5-len(mantissa))*'0'
+    elif (len(mantissa)>5):
+        return -1
+    #print(mantissa)
+
+    float_arithmatic = exp_b + mantissa
+    return float_arithmatic
+
+
+def addf(machine_ins):      # 1.001 + 0.010 = (2**(-3)) (1001 + 0010)
+    global PC
+    global register_list
+    reg1 = int(machine_ins[7:10],2)
+    reg2 = int(machine_ins[10:13],2)
+    reg3 = int(machine_ins[13:16],2)
+    # print(reg1)
+    # print(register_list[reg1][8:])
+    reg1_val = bfloat_to_float(register_list[reg1][8:])
+    # print(reg1_val)
+    # print(register_list[reg2][8:])
+    reg2_val = bfloat_to_float(register_list[reg2][8:])
+
+    reg3_val = reg1_val + reg2_val
+    if (float_to_bfloat(reg3_val) == -1):
+        # overflow flag is set
+        register_list[reg3] = '0000000011111111'
+        temp_flag = list(register_list[7])
+        temp_flag[12] = '1'
+        register_list[7] = ''.join(temp_flag)
+    else:
+        register_list[7] = '0000000000000000'
+        register_list[reg3] = '00000000'+float_to_bfloat(reg3_val)
+    PC+=1
+
+def subf(machine_ins):          # 1.001 - 0.010 = (2**(-3)) (1001 - 0010)
+    global PC
+    global register_list
+    reg1 = int(machine_ins[7:10],2)
+    reg2 = int(machine_ins[10:13],2)
+    reg3 = int(machine_ins[13:16],2)
+    reg1_val = bfloat_to_float(register_list[reg1][8:])
+    reg2_val = bfloat_to_float(register_list[reg2][8:])
+
+    reg3_val = reg1_val - reg2_val
+    if (float_to_bfloat(reg3_val) == -1 or reg3_val<0):
+        # overflow flag is set
+        register_list[reg3] = '0000000000000000'
+        temp_flag = list(register_list[7])
+        temp_flag[12] = '1'
+        register_list[7] = ''.join(temp_flag)
+    else:
+        register_list[7] = '0000000000000000'
+        register_list[reg3] = '00000000'+float_to_bfloat(reg3_val)
+    PC+=1
+
+def movf(machine_ins):
+    global PC
+    global register_list
+    reg = int(machine_ins[5:8],2)
+    imm = machine_ins[8:]
+    register_list[reg] = "00000000"+imm
+
+    register_list[7] = '0000000000000000'
+    PC+=1
 
 
 MEM = sys.stdin
@@ -519,6 +625,27 @@ while halted==False:
         cmp(instruction)
         for items in range(8):
             output.write(str(register_list[items]) + " ")
+        output.write("\n")
+        # for i in range(256):
+        #     print(mem[i])
+    elif instruction[:5] == "00000":
+        addf(instruction)
+        for items in range(8):
+            output.write(register_list[items] + " ")
+        output.write("\n")
+        # for i in range(256):
+        #     print(mem[i])
+    elif instruction[:5] == "00001":
+        subf(instruction)
+        for items in range(8):
+            output.write(register_list[items] + " ")
+        output.write("\n")
+        # for i in range(256):
+        #     print(mem[i])
+    elif instruction[:5] == "00010":
+        movf(instruction)
+        for items in range(8):
+            output.write(register_list[items] + " ")
         output.write("\n")
         # for i in range(256):
         #     print(mem[i])
